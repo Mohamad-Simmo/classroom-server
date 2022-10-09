@@ -4,6 +4,9 @@
   header('Content-Type: application/json');
   header('Access-Control-Allow-Methods: POST');
   header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
+  if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit('ok');
+  }
 
   require_once '../../vendor/autoload.php';
   use Firebase\JWT\JWT;
@@ -26,6 +29,7 @@
       throw new Exception("Please enter all fields");
     }
 
+    $user->role = $data->role;
     $user->fname = $data->fname;
     $user->lname = $data->lname;
     $user->email = $data->email;
@@ -44,11 +48,13 @@
         'nbf' => $iat,
         'exp' => $iat + 259200000, // 3 days
         'data' => [
-          "id" => $insertID
+          "id" => $insertID,
+          "role" => $user->role
         ]
       ];
       $token = JWT::encode($payload, $key, 'HS256');
 
+      http_response_code(201);
       echo json_encode(
         array(
           "id" => $insertID,
@@ -60,6 +66,7 @@
     }
   }
   catch (Exception $e) { 
+    http_response_code(400);
     echo json_encode(
       array('message' => $e->getMessage())
     );

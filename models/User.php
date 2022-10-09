@@ -16,7 +16,6 @@ class User {
     $this->conn = $db;
   }
 
-  // Create user
   public function register() {
 
     // Check if email is taken
@@ -24,12 +23,8 @@ class User {
       "SELECT email FROM {$this->table} WHERE email = ?"
     );
 
-    // Clean email
-    $this->email = htmlspecialchars(strip_tags($this->email));
-
     // Bind email and execute
     $query->bind_param("s", $this->email);
-    
     $query->execute();
     $query->store_result();
 
@@ -37,31 +32,61 @@ class User {
       throw new Exception("Email already exists");
     }
 
-    // Create query and prepare
+    // Create query and prepare to register user
     $query = $this->conn->prepare(
-      "INSERT INTO {$this->table} VALUES(NULL,'user', NULL, ?, ?, ?, ?)"
+      "INSERT INTO {$this->table} VALUES(NULL,?, NULL, ?, ?, ?, ?)"
     );
-
-    // Clean rest of data
-    $this->fname = htmlspecialchars(strip_tags($this->fname));
-    $this->lname = htmlspecialchars(strip_tags($this->lname));
-    $this->email = htmlspecialchars(strip_tags($this->email));
-    $this->password = htmlspecialchars(strip_tags($this->password));
 
     // Hash password
     $this->password = password_hash($this->password, PASSWORD_BCRYPT);
 
     // Bind data
-    $query->bind_param("ssss", $this->fname, $this->lname, $this->email, $this->password);
+    $query->bind_param("sssss", $this->role ,$this->fname, $this->lname, $this->email, $this->password);
 
     // Execute Query
     if ($query->execute()) {
       return $query->insert_id;
     }
 
-    printf("Error : %s.\n", $this->conn->error);
+    throw new Exception('Error: %s\n',$this->conn->error);
+  }
+
+  public function login() {
+    $query = $this->conn->prepare(
+      "SELECT id,role, password, fname, lname FROM {$this->table} WHERE email = ?"
+    );
+
+    $query->bind_param("s", $this->email);
+    $query->execute();
+    $result = $query->get_result();
+    
+    if ($result->num_rows === 0) {
+      throw new Exception("Invalid Credentials");
+    }
+    
+    $result = $result->fetch_assoc();
+
+    if (password_verify($this->password, $result["password"])) {
+      $this->id = $result["id"];
+      $this->role = $result["role"];
+      $this->fname = $result["fname"];
+      $this->lname = $result["lname"];
+      return true;
+    }
+
     return false;
   }
 
+  public function updateRole() {
+    $query = $this->conn->prepare(
+      "UPDATE users SET role = ? WHERE id = ?"
+    );
+
+    $query->bind_param('si', $this->role, $this->id);
+    if ($query->execute()) {
+      return true;
+    }
+    return false;
+  }
 }
 ?>
