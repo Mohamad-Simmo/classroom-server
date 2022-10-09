@@ -18,6 +18,5 @@ Class Database {
 
     return $this->conn;
   }
-
 }
 ?>
