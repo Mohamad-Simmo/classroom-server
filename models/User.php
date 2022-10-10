@@ -6,7 +6,6 @@ class User {
   // User props
   public $id;
   public $role;
-  public $school_id;
   public $fname;
   public $lname;
   public $email;
@@ -34,7 +33,7 @@ class User {
 
     // Create query and prepare to register user
     $query = $this->conn->prepare(
-      "INSERT INTO {$this->table} VALUES(NULL,?, NULL, ?, ?, ?, ?)"
+      "INSERT INTO {$this->table} VALUES(NULL,?, ?, ?, ?, ?)"
     );
 
     // Hash password

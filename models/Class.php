@@ -33,9 +33,10 @@ Class _Class {
     }
   }
 
-  public function read() {
+  public function read() { //CONCAT( firstname, " ", lastname ) AS fullname 
     $query = $this->conn->query(
-      "SELECT users.fname, users.lname, classes.id, classes.name, 
+      "SELECT CONCAT(users.fname,' ', users.lname) AS full_name,
+              classes.id, classes.name, 
               classes.description, classes.code, COUNT(*) as num_people
       FROM {$this->table}
       JOIN users_classes ON users_classes.class_id = classes.id 
