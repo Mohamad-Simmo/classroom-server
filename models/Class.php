@@ -34,26 +34,31 @@ Class _Class {
   }
 
   public function read() { //CONCAT( firstname, " ", lastname ) AS fullname 
-    $query = $this->conn->query(
+    $query = $this->conn->prepare(
       "SELECT CONCAT(users.fname,' ', users.lname) AS full_name,
               classes.id, classes.name, 
               classes.description, classes.code, COUNT(*) as num_people
       FROM {$this->table}
       JOIN users_classes ON users_classes.class_id = classes.id 
       AND (
-        classes.user_id = {$this->user_id}
+        classes.user_id = ?
         OR users_classes.class_id IN (
           SELECT users_classes.class_id 
           FROM users_classes 
-          WHERE users_classes.user_id = {$this->user_id}
+          WHERE users_classes.user_id = ?
         )
       )
       JOIN users ON users.id = classes.user_id
       GROUP BY classes.code ASC"
     );
 
-    if ($query) return $query;
-    else throw new Exception("Network error");
+    $query->bind_param('ii', $this->user_id, $this->user_id );
+
+    if ($query->execute()) {
+      $result = $query->get_result();
+      return $result;
+    }
+    throw new Exception("Network error");
   }
 
   public function delete() {
