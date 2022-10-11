@@ -70,5 +70,8 @@ Class _Class {
     return false;
   }
 
+  public function update() {
+  }
+
 }
 ?>
