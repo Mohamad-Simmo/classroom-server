@@ -19,9 +19,9 @@ Class People {
     
     if ($query->execute()) {
       return true;
+    } else {
+      return false;
     }
-    
-    throw new Exception("Add failed");
   }
 
 }

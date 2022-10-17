@@ -33,7 +33,7 @@ Class _Class {
     }
   }
 
-  public function read() { //CONCAT( firstname, " ", lastname ) AS fullname 
+  public function read() {
     $query = $this->conn->prepare(
       "SELECT CONCAT(users.fname,' ', users.lname) AS full_name,
               classes.id, classes.name, 
@@ -49,6 +49,7 @@ Class _Class {
         )
       )
       JOIN users ON users.id = classes.user_id
+      WHERE classes.archived = false
       GROUP BY classes.code ASC"
     );
 
@@ -76,6 +77,31 @@ Class _Class {
   }
 
   public function update() {
+    $query = $this->conn->prepare(
+      "UPDATE classes SET name = ?, description = ? WHERE id = ?"
+    );
+
+    $query->bind_param("ssi", $this->name, $this->description, $this->id);
+    $query->execute();
+
+    if ($query->affected_rows > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  public function archive() {
+    $query = $this->conn->prepare(
+      "UPDATE classes SET archived = ? WHERE id = ?"
+    );
+
+    $query->bind_param("ii", $this->archived, $this->id);
+    $query->execute();
+
+    if ($query->affected_rows > 0) {
+      return true;
+    }
+    return false;
   }
 
 }
