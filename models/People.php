@@ -19,10 +19,25 @@ Class People {
     
     if ($query->execute()) {
       return true;
-    } else {
-      return false;
-    }
+    } 
+    return false;
   }
+
+  public function check() {
+    $query = $this->conn->prepare(
+      "SELECT * FROM {$this->table} WHERE user_id = ? AND class_id = ?"
+    );
+
+    $query->bind_param("ii", $this->user_id, $this->class_id);
+    $query->execute();
+    $query->store_result();
+
+    if ($query->num_rows > 0) {
+      return true;
+    }
+    return false;
+  }
+
 
 }
 

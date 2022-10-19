@@ -33,6 +33,29 @@ Class _Class {
     }
   }
 
+  public function read_single() {
+    $query = $this->conn->prepare(
+      "SELECT CONCAT(users.fname,' ', users.lname) AS full_name,
+      classes.id, classes.name, 
+      classes.description, classes.code, COUNT(*) as num_people
+      FROM classes 
+      JOIN users ON classes.user_id = users.id
+      JOIN users_classes ON users_classes.class_id = classes.id 
+      WHERE classes.id = ?
+      HAVING num_people > 0
+      LIMIT 1;"
+    );
+
+    $query->bind_param('i', $this->id);
+    $query->execute();
+    $response = $query->get_result();
+
+    if ($response->num_rows > 0) {
+      return $response;
+    } else return false;
+
+  }
+
   public function read() {
     $query = $this->conn->prepare(
       "SELECT CONCAT(users.fname,' ', users.lname) AS full_name,

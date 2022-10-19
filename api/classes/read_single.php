@@ -1,8 +1,8 @@
-<?php 
+<?php
   // Headers
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json');
-  header('Access-Control-Allow-Methods: POST');
+  header('Access-Control-Allow-Methods: GET');
   header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
   if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit('ok');
@@ -22,36 +22,31 @@
   try {
     // Protect route
     require '../../config/protect.php';
-
-    // Get posted data
-    $data = json_decode(file_get_contents("php://input"));
     
     $class->user_id = $user_id;
-    $class->name = $data->name;
-    $class->description = $data->description;
+    $class->id = htmlspecialchars($_GET["id"]);
 
-    if ($insertID = $class->create()) {
-      $class->id = $insertID;
+    // Check if user id is in class
+    $people->user_id = $user_id;
+    $people->class_id = htmlspecialchars($_GET["id"]);
 
-      // Add teacher to class
-      $people->user_id = $user_id;
-      $people->class_id = $class->id;
-      $people->add();
-
-      // Get and return created class
-      $response = $class->read_single();
-
-      http_response_code(201);
-      echo json_encode(
-        $response->fetch_assoc()
-      );
+    if ($people->check()) {
+      if ($response = $class->read_single()) {
+        http_response_code(200);
+        echo json_encode($response->fetch_assoc());
+      }
     }
-  }
-  catch (Exception $e) {
-    http_response_code(400);
+    else {
+      throw new Exception("Unauthorized");
+    }
+    
+  } catch (Exception $e) {
+    http_response_code(401);
     echo json_encode(
       array('message' => $e->getMessage())
     );
   }
+
+
 
 ?>
