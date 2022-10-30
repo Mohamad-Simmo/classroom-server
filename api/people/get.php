@@ -9,27 +9,32 @@
   }
 
   require_once '../../config/Database.php';
-  require_once '../../models/Post.php';
+  require_once '../../models/People.php';
 
-    // Connect db
+   // Connect db
     $database = new Database();
     $db = $database->connect();
-  
-    $post = new Post($db);
+
+    $people = new People($db);
 
     try {
       // Protect route
       require '../../config/protect.php';
 
-      $post->class_id = htmlspecialchars($_GET["class_id"]);
+      $people->class_id = htmlspecialchars($_GET["class_id"]);
 
-      if($result = $post->get()) {
+      if($result = $people->get()) {
         $response = [];
         while ($row = $result->fetch_assoc()) {
           $response[] = $row;
         }
         http_response_code(200);
         echo json_encode($response); 
+      } else {
+        http_response_code(400);
+        echo json_encode(
+          array('message' => "Error")
+        );
       }
 
     } catch (Exception $e) {
@@ -38,4 +43,5 @@
         array('message' => $e->getMessage())
       );
     }
+
 ?>

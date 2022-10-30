@@ -37,7 +37,7 @@ Class _Class {
     $query = $this->conn->prepare(
       "SELECT CONCAT(users.fname,' ', users.lname) AS full_name,
       classes.id, classes.name, 
-      classes.description, classes.code, COUNT(*) as num_people
+      classes.description, classes.code, COUNT(*) as num_people, classes.archived
       FROM classes 
       JOIN users ON classes.user_id = users.id
       JOIN users_classes ON users_classes.class_id = classes.id 
@@ -60,7 +60,8 @@ Class _Class {
     $query = $this->conn->prepare(
       "SELECT CONCAT(users.fname,' ', users.lname) AS full_name,
               classes.id, classes.name, 
-              classes.description, classes.code, COUNT(*) as num_people
+              classes.description, classes.code, COUNT(*) as num_people,
+              classes.archived
       FROM {$this->table}
       JOIN users_classes ON users_classes.class_id = classes.id 
       AND (
@@ -72,7 +73,6 @@ Class _Class {
         )
       )
       JOIN users ON users.id = classes.user_id
-      WHERE classes.archived = false
       GROUP BY classes.code ASC"
     );
 
@@ -92,6 +92,7 @@ Class _Class {
 
     $query->bind_param("ii", $this->id, $this->user_id);
     $query->execute();
+    $query->store_result();
 
     if ($query->affected_rows > 0) {
       return true;

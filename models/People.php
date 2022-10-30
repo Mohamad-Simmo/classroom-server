@@ -23,6 +23,37 @@ Class People {
     return false;
   }
 
+  public function add_email($email) {
+    $query = $this->conn->prepare(
+      "INSERT INTO users_classes VALUES((SELECT users.id
+      FROM users
+      WHERE users.email = ?), ?)"
+    );
+
+    $query->bind_param("si", $email, $this->class_id);
+    if ($query->execute()) {
+      return true;
+    }
+    return false;
+  }
+
+  public function get() {
+    $query = $this->conn->prepare(
+      "SELECT users.fname, users.lname, users.email, users.role
+      FROM users
+      JOIN users_classes ON users_classes.user_id = users.id
+      JOIN classes ON users_classes.class_id = classes.id
+      WHERE classes.id = ?
+      ORDER BY users.role"
+    );
+
+    $query->bind_param("i", $this->class_id);
+    if($query->execute()) {
+      return $query->get_result();
+    }
+    return false;
+  }
+
   public function check() {
     $query = $this->conn->prepare(
       "SELECT * FROM {$this->table} WHERE user_id = ? AND class_id = ?"

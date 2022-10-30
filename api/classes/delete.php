@@ -24,7 +24,6 @@
     $data = json_decode(file_get_contents("php://input"));
 
     $class->id = $data->id;
-
     $class->user_id = $user_id;
 
     if ($class->delete()) {

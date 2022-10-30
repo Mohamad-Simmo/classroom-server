@@ -21,7 +21,7 @@ Class Post {
     $query->bind_param("iis", $this->user_id, $this->class_id, $this->body);
 
     if ($query->execute()) {
-      return true;
+      return $query->insert_id;
     } else {
       return false;
     }
@@ -42,6 +42,23 @@ Class Post {
       $result = $query->get_result();
       return $result;
     }
+  }
+
+  public function get_single() {
+    $query = $this->conn->prepare(
+      "SELECT users.id as user_id, CONCAT(users.fname,' ', users.lname) AS full_name,
+      posts.id, posts.body, posts.timestamp
+      FROM {$this->table}
+      JOIN users ON posts.user_id = users.id
+      WHERE posts.id = ? 
+      LIMIT 1"
+    );
+
+    $query->bind_param('i', $this->id);
+    $query->execute();
+    $response = $query->get_result();
+
+    return $response;
   }
 
   public function update() {

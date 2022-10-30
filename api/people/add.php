@@ -9,41 +9,36 @@
   }
 
   require_once '../../config/Database.php';
-  require_once '../../models/Post.php';
+  require_once '../../models/People.php';
 
   // Connect db
   $database = new Database();
   $db = $database->connect();
 
-  $post = new Post($db);
+  $people = new People($db);
 
   try {
-    // Protect route
     require '../../config/protect.php';
 
-    // Get posted data
     $data = json_decode(file_get_contents("php://input"));
 
-    $post->user_id = $user_id;
-    $post->class_id = $data->class_id;
-    $post->body = $data->body;
+    $emails = explode(',', $data->emails);
+    $people->class_id = $data->class_id;
 
-
-    if ($insertId = $post->create()) {
-      $post->id = $insertId;
-
-      $response = $post->get_single();
-
-      http_response_code(201);
-      echo json_encode($response->fetch_assoc());
-    } else {
-      throw new Exception("Post Failed");
+    $response = [];
+    foreach ($emails as $email) {
+      try {
+        $response += [$email => $people->add_email($email)];
+      } catch (Exception $e) {
+        $response += [$email => false];
+      }
     }
+    http_response_code(201);
+    echo json_encode($response);
 
   } catch (Exception $e) {
     http_response_code(401);
-    echo json_encode(
-      array('message' => $e->getMessage())
-    );
+    echo json_encode(["message" => "Unauthorized"]);
   }
+
 ?>
