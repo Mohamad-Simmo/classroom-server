@@ -5,7 +5,6 @@ Class Form {
 
   public $id;
   public $user_id;
-  public $class_id;
   public $title;
 
   public function __construct($db) {
@@ -13,19 +12,45 @@ Class Form {
   }
   
   public function create() {
-    try {
-      $query = $this->conn->prepare(
-        "INSERT INTO {$this->table} (user_id, class_id, title) VALUES (?, ?, ?)"
-      );
-  
-      $query->bind_param("iis", $this->user_id, $this->class_id, $this->title);
-      $query->execute();
-      return $query->insert_id;
-    } catch (Exception $e) {
-      return $e->getMessage();
-    }
+    $query = $this->conn->prepare(
+      "INSERT INTO {$this->table} (user_id, title) VALUES (?, ?)"
+    );
+
+    $query->bind_param("is", $this->user_id, $this->title);
+    $query->execute();
+    return $query->insert_id;
+  }
+
+  public function getSingle() {
+    $query = $this->conn->prepare(
+      "SELECT id, title FROM {$this->table} WHERE id = ?"
+    );
+
+    $query->bind_param("i", $this->id);
+
+    $query->execute();
+    return $query->get_result();
+  }
+
+  public function getAll() {
+    $query = $this->conn->prepare(
+      "SELECT id, title FROM {$this->table} WHERE user_id = ?"
+    );
+
+    $query->bind_param("i", $this->user_id);
+
+    $query->execute();
+    return $query->get_result();
+  }
+
+  public function delete() {
+    $query = $this->conn->prepare(
+      "DELETE FROM {$this->table} WHERE id = ?"
+    );
+    $query->bind_param("i", $this->id);
+    if ($query->execute()) return true;
+    return false;
   }
 }
-
 
 ?>

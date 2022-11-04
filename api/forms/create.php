@@ -23,10 +23,11 @@
     $questions = $data->questions;
 
     $form->user_id = $user_id;
-    $form->class_id = $data->class_id;
+
     $form->title = $data->title;
 
     $form->id = $form->create();
+    echo $form->id;
 
     foreach ($questions as $question) {
       $correctIndex = $question->correctChoiceIndex;
@@ -45,6 +46,7 @@
         $c->question_id = $q->id;
         $c->choice = $choice;
         $c->id = $c->create();
+        echo $c->id;
 
         if ($correctIndex === $choiceIndex) {
           $q->correct_choice_id = $c->id;

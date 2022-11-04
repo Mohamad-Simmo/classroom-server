@@ -30,6 +30,16 @@ Class Question {
     $query->bind_param('ii', $this->correct_choice_id, $this->id);
     $query->execute();
   }
+
+  public function get() {
+    $query = $this->conn->prepare(
+      "SELECT id, question, correct_choice_id, grade FROM {$this->table}
+      WHERE form_id = ?"
+    );
+    $query->bind_param("i", $this->form_id);
+    $query->execute();
+    return $query->get_result();
+  }
 }
 
 
