@@ -31,11 +31,18 @@ Class Question {
     $query->execute();
   }
 
-  public function get() {
-    $query = $this->conn->prepare(
-      "SELECT id, question, correct_choice_id, grade FROM {$this->table}
-      WHERE form_id = ?"
-    );
+  public function get($isTeacher) {
+    if ($isTeacher) {
+      $query = $this->conn->prepare(
+        "SELECT id, question, correct_choice_id, grade FROM {$this->table}
+        WHERE form_id = ?"
+      );
+    } else {
+      $query = $this->conn->prepare(
+        "SELECT id, question, grade FROM {$this->table}
+        WHERE form_id = ?"
+      );
+    }
     $query->bind_param("i", $this->form_id);
     $query->execute();
     return $query->get_result();

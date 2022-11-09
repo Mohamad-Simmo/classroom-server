@@ -65,7 +65,15 @@ Class Post {
   }
 
   public function delete() {
+    $query = $this->conn->prepare(
+      "DELETE FROM posts WHERE id = ?"
+    );
+
+    $query->bind_param('i', $this->id);
+
+    $query->execute();
   }
+
 
 }
 ?>
