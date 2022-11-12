@@ -58,8 +58,8 @@ Class AssignedForm {
       FROM forms
       JOIN {$this->table} ON forms.id = {$this->table}.form_id
       WHERE {$this->table}.class_id = ? 
-      AND {$this->table}.end_date_time > NOW()
-      AND {$this->table}.start_date_time <= NOW()"
+      AND {$this->table}.end_date_time > UTC_TIMESTAMP()
+      AND {$this->table}.start_date_time <= UTC_TIMESTAMP()"
     );
     $query->bind_param("i", $this->class_id);
     $query->execute();
@@ -79,6 +79,7 @@ Class AssignedForm {
     $query->execute();
     return $query->get_result();
   }
+
 
 }
 

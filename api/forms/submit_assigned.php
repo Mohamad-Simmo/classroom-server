@@ -27,27 +27,25 @@
     
     $answers = $data->answers;
 
-    var_dump($answers);
-    
     // Calculate Grade
     $questions = new Question($db);
     $questions->form_id = $data->form_id;
     $questionsResult = $questions->get(true);
-    $questionsArr = [];
-    while ($row = $questionsResult->fetch_assoc()) {
-      $questionsArr[] = $row;
-    }
-
-    var_dump($questionsArr);
+    $questionsArr = $questionsResult->fetch_all(MYSQLI_ASSOC);
 
     $grade = 0;
-    
-    foreach ($answers as $answer) {
+    for ($i = 0; $i < sizeof($questionsArr); $i++) {
+      $q =  $questionsArr[$i];
+      $ans = $answers[$i];
 
+      if ($q["correct_choice_id"] === $ans->choice_id) {
+        $grade += $q["grade"];
+      }
     }
 
-
-
+    $submitAssigned->grade = $grade;
+    $submitAssigned->submit();
+    http_response_code(201);
 
   } catch (Exception $e) {
 
