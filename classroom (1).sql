@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 09, 2022 at 01:18 PM
+-- Generation Time: Nov 16, 2022 at 01:27 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -34,7 +34,7 @@ CREATE TABLE `assigned_forms` (
   `type` enum('test','assignment') NOT NULL,
   `start_date_time` datetime NOT NULL,
   `end_date_time` datetime NOT NULL,
-  `grades_published` tinyint(1) DEFAULT NULL
+  `grades_published` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -93,6 +93,21 @@ CREATE TABLE `form_submissions` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `material`
+--
+
+CREATE TABLE `material` (
+  `id` int(11) NOT NULL,
+  `section_id` int(11) NOT NULL,
+  `file_name` text NOT NULL,
+  `url` text NOT NULL,
+  `type` text NOT NULL,
+  `size` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `posts`
 --
 
@@ -121,6 +136,18 @@ CREATE TABLE `questions` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sections`
+--
+
+CREATE TABLE `sections` (
+  `id` int(11) NOT NULL,
+  `class_id` int(11) NOT NULL,
+  `title` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -140,8 +167,8 @@ CREATE TABLE `users` (
 --
 
 CREATE TABLE `users_classes` (
-  `user_id` int(11) DEFAULT NULL,
-  `class_id` int(11) DEFAULT NULL
+  `user_id` int(11) NOT NULL,
+  `class_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -183,8 +210,14 @@ ALTER TABLE `forms`
 --
 ALTER TABLE `form_submissions`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `assign_id` (`assign_id`);
+  ADD UNIQUE KEY `unique_index` (`assign_id`,`user_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `material`
+--
+ALTER TABLE `material`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `posts`
@@ -201,6 +234,13 @@ ALTER TABLE `questions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `correct_choice_id` (`correct_choice_id`),
   ADD KEY `questions_ibfk_3` (`form_id`);
+
+--
+-- Indexes for table `sections`
+--
+ALTER TABLE `sections`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `class_id` (`class_id`);
 
 --
 -- Indexes for table `users`
@@ -256,6 +296,12 @@ ALTER TABLE `form_submissions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `material`
+--
+ALTER TABLE `material`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
@@ -265,6 +311,12 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sections`
+--
+ALTER TABLE `sections`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -307,7 +359,7 @@ ALTER TABLE `forms`
 --
 ALTER TABLE `form_submissions`
   ADD CONSTRAINT `form_submissions_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `form_submissions_ibfk_3` FOREIGN KEY (`assign_id`) REFERENCES `assigned_forms` (`id`);
+  ADD CONSTRAINT `form_submissions_ibfk_3` FOREIGN KEY (`assign_id`) REFERENCES `assigned_forms` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `posts`
@@ -322,6 +374,12 @@ ALTER TABLE `posts`
 ALTER TABLE `questions`
   ADD CONSTRAINT `questions_ibfk_2` FOREIGN KEY (`correct_choice_id`) REFERENCES `choices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `questions_ibfk_3` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `sections`
+--
+ALTER TABLE `sections`
+  ADD CONSTRAINT `sections_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `users_classes`

@@ -25,6 +25,11 @@
 
     // Get posted data
     $data = json_decode(file_get_contents("php://input"));
+
+    if (!isset($data->name) || !(strlen($data->name) > 0) ) {
+      echo json_encode(["message" => "Name is required"]);
+      exit(0);
+    }
     
     $class->user_id = $user_id;
     $class->name = $data->name;
