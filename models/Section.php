@@ -24,7 +24,7 @@ Class Section {
 
   public function get() {
     $query = $this->conn->prepare(
-      "SELECT {$this->table}.id, {$this->table}.title 
+      "SELECT id, title 
       FROM {$this->table}
       WHERE class_id = ? 
       ORDER BY id DESC"

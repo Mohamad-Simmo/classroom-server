@@ -31,8 +31,8 @@ Class Question {
     $query->execute();
   }
 
-  public function get($isTeacher) {
-    if ($isTeacher) {
+  public function get($withCorrect) {
+    if ($withCorrect) {
       $query = $this->conn->prepare(
         "SELECT id, question, correct_choice_id, grade FROM {$this->table}
         WHERE form_id = ?"

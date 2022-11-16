@@ -19,7 +19,7 @@
     require '../../config/protect.php';
     $assignedForm->class_id = $_GET["class_id"];
 
-    $result = $assignedForm->getAssigned();
+    $result = $assignedForm->getAssigned($user_id);
     $response = [];
     while ($row = $result->fetch_assoc()) {
       $response[] = $row;

@@ -27,7 +27,6 @@
     $questions = new Question($db);
     $questions->form_id = $form->id;
     $questionsResult = $questions->get($role === "teacher");
-    var_dump($questionsResult);
     $response = [];
     $response["title"] = $form->title;
     $questionsResponse = [];

@@ -10,6 +10,7 @@
 
   require_once '../../config/Database.php';
   require_once '../../models/Section.php';
+  require_once '../../models/Material.php';
 
   $database = new Database();
   $db = $database->connect();
@@ -27,7 +28,9 @@
     $insertID = $section->create();
 
     http_response_code(201);
-    echo json_encode(["id" => $insertID, "title" => $section->title]);
+    
+    echo json_encode(["id" => $insertID, "title" => $section->title, 
+    "material"=> []]); 
 
   } catch (Exception $e) {
     http_response_code(401);
