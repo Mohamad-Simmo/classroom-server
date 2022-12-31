@@ -23,8 +23,4 @@
 
   $result = ($grades->getGrades($role))->fetch_all(MYSQLI_ASSOC);
   echo json_encode($result);
-
-    // Get all grades for all classes
-    // if teacher -> all grades for every class
-
 ?>

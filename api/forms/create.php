@@ -20,13 +20,14 @@
   try {
     require '../../config/protect.php';
     $data = json_decode(file_get_contents("php://input"));
+
     $questions = $data->questions;
 
     $form->user_id = $user_id;
 
     $form->title = $data->title;
 
-    $form->id = $form->create();
+    $form->id = $form->create(); // forms
     echo $form->id;
 
     foreach ($questions as $question) {
@@ -39,7 +40,7 @@
       $q->grade = $question->grade;
       $q->id = $q->create();
 
-      $choiceIndex = 0;
+      $choiceIndex = 0; // 0, 1
       foreach ($question->choices as $choice) {
         // insert choice , if correct choice update question->correct choice id
         $c = new Choice($db);
@@ -48,10 +49,12 @@
         $c->id = $c->create();
         echo $c->id;
 
+        // 1 === 1 ? 
         if ($correctIndex === $choiceIndex) {
-          $q->correct_choice_id = $c->id;
+          $q->correct_choice_id = $c->id; // 1
           $q->setCorrect();
         }
+
         $choiceIndex++;
       }
     }

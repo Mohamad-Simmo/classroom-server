@@ -37,7 +37,7 @@
 
         if(move_uploaded_file($file_tmp_name , $upload_name)) {
           $upload_name = str_replace("/opt/lampp/htdocs/", "", $upload_name);
-
+          $upload_name = str_replace("C:/xampp/htdocs/", "", $upload_name);
           $material = new Material($db);
           $material->section_id = (int)$_POST["section_id"];
           $material->file_name = $file_name;

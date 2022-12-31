@@ -23,12 +23,12 @@ Class FormSubmissions {
     $query->execute();
   }
 
-  public function getGrades($role) { // param = 'class' or 'user'
+  public function getGrades($role) {
     $queryString = '';
     if ($role === 'student') {
       $queryString = "SELECT form_submissions.id, form_submissions.date_time,
       form_submissions.grade, forms.title, assigned_forms.type, classes.name,
-      classes.id
+      classes.id as class_id
       from form_submissions
       JOIN assigned_forms ON assigned_forms.id = form_submissions.assign_id
       JOIN forms ON assigned_forms.form_id = forms.id
@@ -50,7 +50,8 @@ Class FormSubmissions {
         SELECT users_classes.class_id
         FROM users_classes 
         WHERE users_classes.user_id = ?
-      )";
+      )
+      ORDER BY form_submissions.date_time DESC";
     }
 
     $query = $this->conn->prepare($queryString);
@@ -59,12 +60,6 @@ Class FormSubmissions {
     return $query->get_result();
   }
 }
-/* select form_submissions.id, form_submissions.date_time, form_submissions.grade, assigned_forms.type, classes.name, CONCAT(users.fname, " ", users.lname) as full_name
-from form_submissions
-JOIN assigned_forms ON assigned_forms.id = form_submissions.assign_id
-JOIN classes ON classes.id = assigned_forms.class_id
-JOIN users ON users.id = form_submissions.user_id
-WHERE users.id IN (SELECT users.id FROM users JOIN users_classes WHERE users.id IN (SELECT users_classes.user_id from users_classes where users_classes.user_id = 23)); */
 
 ?>
 

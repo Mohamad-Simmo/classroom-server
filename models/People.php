@@ -37,6 +37,18 @@ Class People {
     return false;
   }
 
+  public function join_class($code) {
+    $query = $this->conn->prepare(
+      "INSERT INTO users_classes VALUES (?, (SELECT id FROM classes WHERE code = ?))"
+    );
+    $query->bind_param("is", $this->user_id, $code);
+    $query->execute();
+    if ($query->affected_rows > 0) {
+      return true;
+    }
+    return false;
+  }
+
   public function get() {
     $query = $this->conn->prepare(
       "SELECT users.fname, users.lname, users.email, users.role

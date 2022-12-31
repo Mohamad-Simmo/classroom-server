@@ -34,7 +34,7 @@ Class Form {
 
   public function getAll() {
     $query = $this->conn->prepare(
-      "SELECT id, title FROM {$this->table} WHERE user_id = ?"
+      "SELECT id, title FROM {$this->table} WHERE user_id = ? ORDER BY id DESC"
     );
 
     $query->bind_param("i", $this->user_id);

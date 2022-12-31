@@ -60,6 +60,7 @@
           "id" => $insertID,
           "full_name" => $user->fname ." ".$user->lname,
           "email" => $user->email,
+          "role" => $user->role,
           "token" => $token
         )
       );
